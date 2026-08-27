@@ -8,22 +8,34 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-const connectDb = async () => {
-  console.log("connecting...");
+const connectDb = async (log) => {
+
+  log.info('db.connecting');
+
   try {
+
     await pool.query('SELECT NOW()');
-    console.log("connected");
+
+    log.info('db.connected');
+
   } catch (err) {
-    console.log("error");
-    console.log("retry");
+
+    log.error({ err }, 'db.connection_failed');
+    log.warn('db.retry');
+
   }
+
 };
 
-const queryDb = async (text, params) => {
-  console.log("query...");
+const queryDb = async (text, params, log) => {
+
+  log.info('db.query');
+
   const res = await pool.query(text, params);
-  console.log("finished");
-  return res;
-};
 
+  log.info('db.query.finished');
+
+  return res;
+
+};
 module.exports = { connectDb, queryDb, pool };
